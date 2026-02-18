@@ -1691,12 +1691,12 @@ print('--[[Loaded UI]]--')
 
 local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 local Window = Fluent:CreateWindow({
-    Title = 'Eclipse Hub V4 [Freemium]',
+    Title = 'Luan Cat Hub V2 [Freemium]',
     SubTitle = 'By Luan Cat',
     TabWidth = 155,
     Size = UDim2.fromOffset(500, 350),
     Acrylic = false,
-    Theme = 'Aqua',
+    Theme = 'Dark',
     MinimizeKey = Enum.KeyCode.End,
 })
 
@@ -1708,7 +1708,7 @@ local Tabs = {
   Main = Window:AddTab({Title = "Tab Farming", Icon = ""}),
   Stack = Window:AddTab({Title = "Tab Stack Farm", Icon = ""}),
   Other = Window:AddTab({Title = "Tab Farming Other", Icon = ""}),
-  Valentine = Window:AddTab({Title = "❤️ Valentines Day", Icon = ""}),
+  Valentine = Window:AddTab({Title = "Tab Valentines Day", Icon = ""}),
   Blog = Window:AddTab({Title = "Tab Fruit And Raid", Icon = ""}),
   Sea = Window:AddTab({Title = "Tab Sea Event", Icon = ""}),
   ChooseSkill = Window:AddTab({Title = "Tab Setting Select Skill", Icon = ""}),
@@ -11182,7 +11182,7 @@ Input = Tabs.PVP:AddInput('Input', {
 game.StarterGui:SetCore('SendNotification', {
     Title = 'Yes Or No',
     Text = 'U want reset Config?',
-    Icon = 'rbxassetid://112518061635682',
+    Icon = 'rbxassetid://84722735301781',
     Duration = 100000,
     Button1 = 'Yes',
     Button2 = 'No',
@@ -11209,7 +11209,7 @@ ScreenGui.ResetOnSpawn = false
 local Frame = Instance.new("Frame")
 Frame.Size = UDim2.new(0, 50, 0, 50)
 Frame.Position = UDim2.new(0.15, 0, 0.15, 0)
-Frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+Frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 Frame.BorderSizePixel = 0
 Frame.Parent = ScreenGui
 Frame.Active = true
@@ -11226,7 +11226,7 @@ Image.AnchorPoint = Vector2.new(0.5, 0.5)
 Image.Position = UDim2.new(0.5, 0, 0.5, 0)
 Image.Size = UDim2.new(0, 10, 0, 10)
 Image.BackgroundTransparency = 1
-Image.Image = "rbxassetid://112518061635682"
+Image.Image = "rbxassetid://84722735301781"
 
 -- Botão invisível
 local Button = Instance.new("TextButton")
@@ -11554,6 +11554,6 @@ print('\u{2705} Smooth + Stable Anti-Lag Activated - Made by obii')
 game.StarterGui:SetCore('SendNotification', {
     Title = 'UPDATE!',
     Text = 'Reduce Lag And Fixed Some Functions\u{2705}',
-    Icon = 'rbxassetid://112518061635682',
+    Icon = 'rbxassetid://84722735301781',
     Duration = 8,
 })
