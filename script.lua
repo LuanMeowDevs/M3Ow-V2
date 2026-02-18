@@ -1691,7 +1691,7 @@ print('--[[Loaded UI]]--')
 
 local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 local Window = Fluent:CreateWindow({
-    Title = 'Eclipse Hub V3 [Freemium] Valentines Day Edition',
+    Title = 'Eclipse Hub V3 [Freemium] ❤️Valentines Day Edition❤️',
     SubTitle = 'By Luan Cat',
     TabWidth = 155,
     Size = UDim2.fromOffset(500, 350),
@@ -3605,7 +3605,7 @@ Tabs.Main:AddButton({
     Title = "Copy Discord Invite",
     Callback = function()
         if setclipboard then
-            setclipboard("https://discord.gg/2YCGftRB")
+            setclipboard("https://discord.gg/RdmvSqRA")
         end
     end
 })
@@ -6607,6 +6607,42 @@ spawn(function()
     end
 end)
 
+Tabs.Valentine:AddToggle('AutoGacha', {
+    Title = 'Auto Random Valentine Gacha',
+    Default = false,
+}):OnChanged(function(Value)
+    _G.AutoValentineGacha = Value
+end)
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Remotes = ReplicatedStorage:WaitForChild("Remotes")
+local CommF = Remotes:WaitForChild("CommF_")
+
+local function fireActivity()
+    local reportRemote = ReplicatedStorage:FindFirstChild("ReportActivity", true)
+    if reportRemote and reportRemote:IsA("RemoteEvent") then
+        pcall(function()
+            reportRemote:FireServer("GachaWindow")
+        end)
+    end
+end
+
+task.spawn(function()
+    while true do
+        if _G.AutoValentineGacha then
+            pcall(function()
+                CommF:InvokeServer("Cousin")
+                task.wait(0.1)
+                fireActivity()
+                task.wait(0.1)
+                CommF:InvokeServer("Cousin", "CheckCanBuyType", "ValentinesGacha26")
+                task.wait(0.1)
+                CommF:InvokeServer("Cousin", "ValentinesGacha26")
+            end)
+        end
+        task.wait(2.5)
+    end
+end)
 
 Tabs.Blog:AddToggle('Toggle', {
     Title = 'Random Devil Fruit',
