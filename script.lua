@@ -1691,12 +1691,12 @@ print('--[[Loaded UI]]--')
 
 local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 local Window = Fluent:CreateWindow({
-    Title = 'Eclipse Hub V3 [Freemium] ❤️Valentines Day Edition❤️',
+    Title = 'Eclipse Hub V4 [Freemium]',
     SubTitle = 'By Luan Cat',
     TabWidth = 155,
     Size = UDim2.fromOffset(500, 350),
     Acrylic = false,
-    Theme = 'Rose',
+    Theme = 'Aqua',
     MinimizeKey = Enum.KeyCode.End,
 })
 
@@ -11182,7 +11182,7 @@ Input = Tabs.PVP:AddInput('Input', {
 game.StarterGui:SetCore('SendNotification', {
     Title = 'Yes Or No',
     Text = 'U want reset Config?',
-    Icon = 'rbxassetid://130364232574601',
+    Icon = 'rbxassetid://112518061635682',
     Duration = 100000,
     Button1 = 'Yes',
     Button2 = 'No',
@@ -11224,9 +11224,9 @@ local Image = Instance.new("ImageLabel")
 Image.Parent = Frame
 Image.AnchorPoint = Vector2.new(0.5, 0.5)
 Image.Position = UDim2.new(0.5, 0, 0.5, 0)
-Image.Size = UDim2.new(0, 20, 0, 20)
+Image.Size = UDim2.new(0, 10, 0, 10)
 Image.BackgroundTransparency = 1
-Image.Image = "rbxassetid://130364232574601"
+Image.Image = "rbxassetid://112518061635682"
 
 -- Botão invisível
 local Button = Instance.new("TextButton")
@@ -11554,6 +11554,6 @@ print('\u{2705} Smooth + Stable Anti-Lag Activated - Made by obii')
 game.StarterGui:SetCore('SendNotification', {
     Title = 'UPDATE!',
     Text = 'Reduce Lag And Fixed Some Functions\u{2705}',
-    Icon = 'rbxassetid://130364232574601',
+    Icon = 'rbxassetid://112518061635682',
     Duration = 8,
 })
