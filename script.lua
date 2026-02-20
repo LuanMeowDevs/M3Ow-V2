@@ -95,7 +95,7 @@ if ({
         World3 = true
     end
 else
-    game.Players.LocalPlayer:Kick('Incorrect Place Id❌')
+    game.Players.LocalPlayer:Kick('Unsupported Game')
 end
 
 repeat
@@ -1691,8 +1691,8 @@ print('--[[Loaded UI]]--')
 
 local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 local Window = Fluent:CreateWindow({
-    Title = 'M3OWl Cat Hub V2 [ Freemium ]',
-    SubTitle = 'by M3Owl and 1x1x1x1x1x1x1',
+    Title = 'M3OWl Hub V2 [ Freemium ]',
+    SubTitle = 'by K1R4 And 1x1x1x1x1x1',
     TabWidth = 155,
     Size = UDim2.fromOffset(500, 350),
     Acrylic = false,
@@ -11513,10 +11513,10 @@ while true do
     end
 end
 
-print('\u{2705} Smooth + Stable Anti-Lag Activated - Made by 1x1x1x1x1')
+print('\u{2705} Smooth + Stable Anti-Lag Activated - Made by 1x1x1x1x1x1')
 game.StarterGui:SetCore('SendNotification', {
     Title = 'UPDATE!',
-    Text = 'Fixed Loader V2\u{2705}',
+    Text = 'Fixed V2 Loader\u{2705}',
     Icon = 'rbxassetid://84722735301781',
     Duration = 8,
 })
