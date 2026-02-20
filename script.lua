@@ -93,11 +93,11 @@ local function NotificacaoNightMystic(titulo, mensagem)
     end)
     
     if not success then
-        warn("[M3OWl] Erro ao exibir notificação")
+        warn("[M3Ow] Erro ao exibir notificação")
     end
 end
 
-NotificacaoNightMystic("M3OWl Hub", "Script carregado com sucesso!")
+NotificacaoNightMystic("M3Ow Hub", "Script carregado com sucesso!")
 
 -- ========================================
 -- SAVE SYSTEM (Optimized)
@@ -2396,9 +2396,9 @@ QuestNeta = function()
 		};
 	end;
 	local Library = loadstring(game:HttpGet("https://pastefy.app/2NsMZRkm/raw"))():MakeWindow({
-    Title = "M3OWl Cat Hub [Freemium]",
-    SubTitle = "by K 1 R $ Cat and 1x1x1x1x1x1",
-    SaveFolder = "M3OWl.json"
+    Title = "M3OWl Hub V1",
+    SubTitle = "by K 1 R $ and 1x1x1x1x1x1",
+    SaveFolder = "M3Ow.json"
 })
 -- Criar ScreenGui
 local screenGui = Instance.new("ScreenGui")
@@ -2422,7 +2422,7 @@ uiCorner.Parent = imageButton
 local uiStroke = Instance.new("UIStroke", imageButton)
 uiStroke.Thickness = 2
 uiStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-uiStroke.Color = Color3.fromRGB(255, 255, 255) -- Magenta/Rosa forte
+uiStroke.Color = Color3.fromRGB(255, 200, 40) -- Magenta/Rosa forte
 
 -- Variáveis para arrastar
 local dragging = false
