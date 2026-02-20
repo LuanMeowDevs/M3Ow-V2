@@ -11189,7 +11189,7 @@ Image.AnchorPoint = Vector2.new(0.5, 0.5)
 Image.Position = UDim2.new(0.5, 0, 0.5, 0)
 Image.Size = UDim2.new(0, 40, 0, 40)
 Image.BackgroundTransparency = 1
-Image.Image = "rbxassetid://16119081697"
+Image.Image = "rbxassetid://16119081646"
 
 -- Botão invisível
 local Button = Instance.new("TextButton")
