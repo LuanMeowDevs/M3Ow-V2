@@ -9,11 +9,254 @@ local Window = WindUI:CreateWindow({
     SideBarWidth = 190,
     HasOutline = false,
 });
+-- WindUI precisa do EditOpenButton para inicializar o GUI interno
+-- Posicionamos fora da tela para nao aparecer (nosso botao customizado faz o toggle)
 Window:EditOpenButton({
-    Title = "🪐Saturn Hub🪐",
-    CornerRadius = UDim.new(0, 10),
+    Title = "🪐",
+    Size = UDim2.new(0, 1, 0, 1),
+    Position = UDim2.new(0, -100, 0, -100),
     Draggable = false
 });
+-- ============================================================
+-- BOTAO REDONDO CUSTOMIZADO
+-- Arraste | Clique para abrir/fechar | RightShift = atalho
+-- ============================================================
+do
+    -- >> CONFIGURE AQUI <<
+    local IMAGE_ID    = "rbxassetid://7734053495" -- Troque pelo ID da sua imagem Roblox
+    local BUTTON_SIZE = 52                         -- Tamanho em pixels
+    local INITIAL_POS = UDim2.new(0, 15, 0, 15)   -- Posicao inicial
+    local TOGGLE_KEY  = Enum.KeyCode.RightShift    -- Tecla de atalho
+
+    local UIS         = game:GetService("UserInputService")
+    local TweenSvc    = game:GetService("TweenService")
+    local Players     = game:GetService("Players")
+    local CoreGui     = game:GetService("CoreGui")
+
+    -- Remove GUI anterior se existir
+    if CoreGui:FindFirstChild("SaturnRoundBtn") then
+        CoreGui:FindFirstChild("SaturnRoundBtn"):Destroy()
+    end
+
+    -- Cria ScreenGui para o botao
+    local SGui = Instance.new("ScreenGui")
+    SGui.Name            = "SaturnRoundBtn"
+    SGui.ResetOnSpawn    = false
+    SGui.DisplayOrder    = 9999
+    SGui.IgnoreGuiInset  = true
+    SGui.Parent          = CoreGui
+
+    -- Sombra difusa
+    local Shadow = Instance.new("ImageLabel")
+    Shadow.Size              = UDim2.new(0, BUTTON_SIZE + 16, 0, BUTTON_SIZE + 16)
+    Shadow.Position          = UDim2.new(INITIAL_POS.X.Scale, INITIAL_POS.X.Offset - 8,
+                                          INITIAL_POS.Y.Scale, INITIAL_POS.Y.Offset - 8)
+    Shadow.BackgroundTransparency = 1
+    Shadow.Image             = "rbxassetid://5554236805"
+    Shadow.ImageColor3       = Color3.fromRGB(90, 50, 180)
+    Shadow.ImageTransparency = 0.45
+    Shadow.ScaleType         = Enum.ScaleType.Slice
+    Shadow.SliceCenter       = Rect.new(23, 23, 277, 277)
+    Shadow.Parent            = SGui
+
+    -- Frame principal (circulo)
+    local BtnFrame = Instance.new("Frame")
+    BtnFrame.Size             = UDim2.new(0, BUTTON_SIZE, 0, BUTTON_SIZE)
+    BtnFrame.Position         = INITIAL_POS
+    BtnFrame.BackgroundColor3 = Color3.fromRGB(20, 14, 38)
+    BtnFrame.BorderSizePixel  = 0
+    BtnFrame.ClipsDescendants = true
+    BtnFrame.Parent           = SGui
+    Instance.new("UICorner", BtnFrame).CornerRadius = UDim.new(1, 0)
+
+    -- Borda brilhante
+    local Stroke = Instance.new("UIStroke")
+    Stroke.Color     = Color3.fromRGB(115, 70, 215)
+    Stroke.Thickness = 2
+    Stroke.Parent    = BtnFrame
+
+    -- Imagem (foto do Roblox ou qualquer asset)
+    local Img = Instance.new("ImageLabel")
+    Img.Size                 = UDim2.new(1, -4, 1, -4)
+    Img.Position             = UDim2.new(0, 2, 0, 2)
+    Img.BackgroundTransparency = 1
+    Img.Image                = IMAGE_ID
+    Img.ScaleType            = Enum.ScaleType.Crop
+    Img.Parent               = BtnFrame
+    Instance.new("UICorner", Img).CornerRadius = UDim.new(1, 0)
+
+    -- Overlay escuro (quando UI fechada)
+    local Overlay = Instance.new("Frame")
+    Overlay.Size                  = UDim2.new(1, 0, 1, 0)
+    Overlay.BackgroundColor3      = Color3.fromRGB(0, 0, 0)
+    Overlay.BackgroundTransparency = 1
+    Overlay.BorderSizePixel       = 0
+    Overlay.ZIndex                = 3
+    Overlay.Parent                = BtnFrame
+    Instance.new("UICorner", Overlay).CornerRadius = UDim.new(1, 0)
+
+    -- TextButton invisivel para capturar cliques
+    local ClickBtn = Instance.new("TextButton")
+    ClickBtn.Size                 = UDim2.new(1, 0, 1, 0)
+    ClickBtn.BackgroundTransparency = 1
+    ClickBtn.Text                 = ""
+    ClickBtn.ZIndex               = 10
+    ClickBtn.Parent               = BtnFrame
+
+    -- Tooltip ao lado
+    local Tooltip = Instance.new("Frame")
+    Tooltip.Size                   = UDim2.new(0, 100, 0, 26)
+    Tooltip.Position               = UDim2.new(1, 10, 0.5, -13)
+    Tooltip.BackgroundColor3       = Color3.fromRGB(18, 13, 35)
+    Tooltip.BackgroundTransparency = 1
+    Tooltip.BorderSizePixel        = 0
+    Tooltip.ZIndex                 = 8
+    Tooltip.Parent                 = BtnFrame
+    Instance.new("UICorner", Tooltip).CornerRadius = UDim.new(0, 7)
+
+    local TipLbl = Instance.new("TextLabel")
+    TipLbl.Size                 = UDim2.new(1, -8, 1, 0)
+    TipLbl.Position             = UDim2.new(0, 4, 0, 0)
+    TipLbl.BackgroundTransparency = 1
+    TipLbl.Text                 = "🪐 Saturn Hub"
+    TipLbl.TextColor3           = Color3.fromRGB(205, 185, 255)
+    TipLbl.TextSize             = 11
+    TipLbl.Font                 = Enum.Font.GothamBold
+    TipLbl.ZIndex               = 9
+    TipLbl.Parent               = Tooltip
+
+    -- ── Logica de Toggle ─────────────────────────────────────
+    local isOpen = true
+
+    -- Referencia ao GUI da WindUI (preenchida depois que o script carrega)
+    local _windGUI = nil
+
+    local function findWindUIGui()
+        -- Tenta via metadado interno do WindUI
+        if Window and rawget(Window, "_GUI") then
+            return rawget(Window, "_GUI")
+        end
+        -- Busca no PlayerGui
+        local pgui = Players.LocalPlayer:FindFirstChildOfClass("PlayerGui")
+        if pgui then
+            -- Primeiro: nome com "wind" ou "saturn"
+            for _, v in ipairs(pgui:GetChildren()) do
+                if v:IsA("ScreenGui") and v.Name ~= "SaturnRoundBtn" then
+                    local n = v.Name:lower()
+                    if n:find("wind") or n:find("saturn") or n:find("hub") then
+                        return v
+                    end
+                end
+            end
+            -- Fallback: primeiro ScreenGui que nao e o nosso
+            for _, v in ipairs(pgui:GetChildren()) do
+                if v:IsA("ScreenGui") and v.Name ~= "SaturnRoundBtn" then
+                    return v
+                end
+            end
+        end
+        return nil
+    end
+
+    -- Aguarda WindUI carregar (roda em background)
+    task.delay(2, function()
+        _windGUI = findWindUIGui()
+    end)
+
+    local function setOpen(open)
+        isOpen = open
+        pcall(function()
+            -- Tenta cache primeiro, senao busca novamente
+            local gui = _windGUI or findWindUIGui()
+            if gui then
+                _windGUI = gui -- guarda para proximas chamadas
+                gui.Enabled = open
+            end
+        end)
+        -- Anima o botao
+        if open then
+            TweenSvc:Create(Stroke, TweenInfo.new(0.2), { Color = Color3.fromRGB(130, 80, 255), Thickness = 2 }):Play()
+            TweenSvc:Create(Overlay, TweenInfo.new(0.2), { BackgroundTransparency = 1 }):Play()
+            TweenSvc:Create(Shadow, TweenInfo.new(0.2), {
+                ImageColor3 = Color3.fromRGB(100, 55, 210), ImageTransparency = 0.4 }):Play()
+            TipLbl.Text = "🪐 Saturn Hub"
+        else
+            TweenSvc:Create(Stroke, TweenInfo.new(0.2), { Color = Color3.fromRGB(50, 35, 90), Thickness = 1.5 }):Play()
+            TweenSvc:Create(Overlay, TweenInfo.new(0.2), { BackgroundTransparency = 0.45 }):Play()
+            TweenSvc:Create(Shadow, TweenInfo.new(0.2), {
+                ImageColor3 = Color3.fromRGB(25, 15, 55), ImageTransparency = 0.8 }):Play()
+            TipLbl.Text = "Abrir UI"
+        end
+    end
+
+    local function toggleUI()
+        setOpen(not isOpen)
+    end
+
+    -- Clique para toggle
+    ClickBtn.MouseButton1Click:Connect(toggleUI)
+
+    -- Hover: mostra tooltip + expande levemente
+    local basePos = INITIAL_POS
+    ClickBtn.MouseEnter:Connect(function()
+        TweenSvc:Create(Tooltip, TweenInfo.new(0.15), { BackgroundTransparency = 0 }):Play()
+        local cur = BtnFrame.Position
+        TweenSvc:Create(BtnFrame, TweenInfo.new(0.12), {
+            Size = UDim2.new(0, BUTTON_SIZE + 6, 0, BUTTON_SIZE + 6),
+            Position = UDim2.new(cur.X.Scale, cur.X.Offset - 3, cur.Y.Scale, cur.Y.Offset - 3)
+        }):Play()
+    end)
+    ClickBtn.MouseLeave:Connect(function()
+        TweenSvc:Create(Tooltip, TweenInfo.new(0.15), { BackgroundTransparency = 1 }):Play()
+        local cur = BtnFrame.Position
+        TweenSvc:Create(BtnFrame, TweenInfo.new(0.12), {
+            Size = UDim2.new(0, BUTTON_SIZE, 0, BUTTON_SIZE),
+            Position = UDim2.new(cur.X.Scale, cur.X.Offset + 3, cur.Y.Scale, cur.Y.Offset + 3)
+        }):Play()
+    end)
+
+    -- Atalho de teclado (RightShift)
+    UIS.InputBegan:Connect(function(input, processed)
+        if processed then return end
+        if input.KeyCode == TOGGLE_KEY then toggleUI() end
+    end)
+
+    -- ── Arrastar ─────────────────────────────────────────────
+    local dragging     = false
+    local dragStart    = nil
+    local startBtnPos  = nil
+    local startShdPos  = nil
+
+    ClickBtn.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1
+        or input.UserInputType == Enum.UserInputType.Touch then
+            dragging    = true
+            dragStart   = input.Position
+            startBtnPos = BtnFrame.Position
+            startShdPos = Shadow.Position
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end)
+
+    UIS.InputChanged:Connect(function(input)
+        if not dragging then return end
+        if input.UserInputType ~= Enum.UserInputType.MouseMovement
+        and input.UserInputType ~= Enum.UserInputType.Touch then return end
+        local d = input.Position - dragStart
+        BtnFrame.Position = UDim2.new(
+            startBtnPos.X.Scale, startBtnPos.X.Offset + d.X,
+            startBtnPos.Y.Scale, startBtnPos.Y.Offset + d.Y
+        )
+        Shadow.Position = UDim2.new(
+            startShdPos.X.Scale, startShdPos.X.Offset + d.X,
+            startShdPos.Y.Scale, startShdPos.Y.Offset + d.Y
+        )
+    end)
+end
 local Tabs = {
 	MainTab = Window:Tab({
 		Title = "Main",
@@ -383,12 +626,12 @@ end;
 	end;
 end;
 (getgenv()).Load();
-if game.PlaceId == 2753915549 or game.PlaceId == 85211729168715 then
-    World1 = true;
-elseif game.PlaceId == 4442272183 or game.PlaceId == 79091703265657 then
-    World2 = true;
-elseif game.PlaceId == 7449423635 or game.PlaceId == 100117331123089 then
-    World3 = true;
+if game.PlaceId == 2753915549 then
+	World1 = true;
+elseif game.PlaceId == 4442272183 then
+	World2 = true;
+elseif game.PlaceId == 7449423635 then
+	World3 = true;
 end;
 -- ======================================================
 -- [M3Ow SYSTEMS] Merged from M3Ow Hub V1
