@@ -712,66 +712,6 @@ function StretchScreen()
     end)
 end
 
-spawn(function()
-    local Players = game:GetService("Players")
-    local Player = Players.LocalPlayer
-    local function SafeGet(parent, name)
-        local ok, res = pcall(function() return parent:WaitForChild(name, 3) end)
-        return ok and res or nil
-    end
-    local Modules = SafeGet(game:GetService("ReplicatedStorage"), "Modules")
-    local Net = Modules and SafeGet(Modules, "Net")
-    local RegisterAttack = Net and SafeGet(Net, "RE/RegisterAttack")
-    local RegisterHit = Net and SafeGet(Net, "RE/RegisterHit")
-    if not RegisterAttack or not RegisterHit then return end
-    local FA = {Distance=100}
-    local function ProcessM3Enemies(list, folder)
-        local basePart = nil
-        for _, enemy in ipairs(folder:GetChildren()) do
-            local head = enemy:FindFirstChild("Head")
-            if head and enemy:FindFirstChild("Humanoid") and enemy.Humanoid.Health > 0
-            and Player:DistanceFromCharacter(head.Position) < FA.Distance
-            and enemy ~= Player.Character then
-                table.insert(list, {enemy, head})
-                basePart = head
-            end
-        end
-        return basePart
-    end
-    local function AttackNearest()
-        local enemies = {}
-        local ef = workspace:FindFirstChild("Enemies")
-        local cf = workspace:FindFirstChild("Characters")
-        local p1 = ef and ProcessM3Enemies(enemies, ef)
-        local p2 = cf and ProcessM3Enemies(enemies, cf)
-        local char = Player.Character
-        if not char or #enemies == 0 then return end
-        local tool = char:FindFirstChildOfClass("Tool")
-        if tool and tool:FindFirstChild("LeftClickRemote") then
-            for _, data in ipairs(enemies) do
-                local e = data[1]
-                if e:FindFirstChild("HumanoidRootPart") and char:FindFirstChild("HumanoidRootPart") then
-                    local dir = (e.HumanoidRootPart.Position - char:GetPivot().Position).Unit
-                    pcall(function() tool.LeftClickRemote:FireServer(dir, 1) end)
-                end
-            end
-        else
-            pcall(function() RegisterAttack:FireServer(0) RegisterHit:FireServer(p1 or p2, enemies) end)
-        end
-    end
-    FastAttackActive = true
-    while task.wait(0) do
-        if FastAttackActive then
-            pcall(function()
-                local char = Player.Character
-                local hum = char and char:FindFirstChild("Humanoid")
-                if not hum or hum.Health <= 0 then return end
-                local tool = char:FindFirstChildOfClass("Tool")
-                if tool and tool.ToolTip ~= "Gun" then AttackNearest() end
-            end)
-        end
-    end
-end)
 -- ======================================================
 -- ======================================================
 
@@ -5015,14 +4955,6 @@ AutoActiveCoresToggle = Tabs.SettingsTab:Toggle({
 	Default = false,
 	Callback = function(state)
 		AutoActiveCores = state
-	end
-});
-FastAttackToggle = Tabs.SettingsTab:Toggle({
-	Title = "OW Fast Attack (Advanced)",
-	Desc = "Sistema de fast attack avancado com RegisterHit",
-	Default = true,
-	Callback = function(state)
-		FastAttackActive = state
 	end
 });
 GraphicSettingSection = Tabs.SettingsTab:Section({
